@@ -14,8 +14,10 @@ class WordsDataValidator {
     }
 
     public function checkIfExistFavorite(string $user_id, string $word) {
-        if (UserFavorite::where('user_id', $user_id)->where('word', $word)){
-            throw new Exception('Word not found on favorites section');
+        if (!UserFavorite::where('user_id', $user_id)->where('word', $word)){
+            throw new Exception('Word not found in favorites section');
+        } else {            
+            throw new Exception('Word already set as favorite');
         }
     }
 }
