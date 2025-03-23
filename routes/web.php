@@ -31,5 +31,9 @@ Route::group(['prefix' => 'entries'], function() {
     Route::post('/en/{word}/unfavorite', 'App\Http\Controllers\Words\WordsController@unfavoriteWord')->name('unfavoriteWord');
 });
 
-
+Route::group(['prefix' => 'user'], function() {
+    Route::get('/me', 'App\Http\Controllers\User\UserController@profile')->name('profile');
+    Route::get('/me/history', 'App\Http\Controllers\User\UserController@history')->name('history');
+    Route::get('/me/favorites', 'App\Http\Controllers\User\UserController@favorites')->name('favorites');
+});
 
