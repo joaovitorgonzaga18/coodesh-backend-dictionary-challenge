@@ -11,7 +11,7 @@ class Controller {
     use AuthorizesRequests, ValidatesRequests;
     
     public const HTTP_SUCCESS_STATUS = 200;
-    public const HTTP_CREATED_STATUS = 201;
+    public const HTTP_NO_BODY_SUCCESS_STATUS = 201;
     public const HTTP_BAD_REQUEST_STATUS = 400;
 
     public function buildSuccessResponse(mixed $data): JsonResponse {
@@ -25,7 +25,7 @@ class Controller {
     
     public function buildBadRequestResponse(string $errorMessage): JsonResponse {
         return response()->json(
-            ['bad_request' => $errorMessage],
+            ['message' => $errorMessage],
             self::HTTP_BAD_REQUEST_STATUS
         );
     }
