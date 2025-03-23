@@ -14,25 +14,28 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller {    
     public function signIn(Request $request): JsonResponse {
-        $request->validate([
-            'email' => 'required|email|max:100',
-            'password' => 'required|max:100',
-        ]);
 
-        $user = User::where('email', $request->email)->first();
+        try {
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            return $this->buildBadRequestResponse('Invalid Credentials');
+            $credentials = $request->only('email', 'password');
+
+            if (! $token = JWTAuth::attempt($credentials)) {
+                return $this->buildBadRequestResponse('Invalid credentials');
+            }
+
+            $user = auth()->user();
+
+            $token = JWTAuth::claims(['role' => $user->role])->fromUser($user);
+
+            return $this->buildSuccessResponse([
+                'id' => $user->uuid,
+                'name' => $user->name,
+                'token' => 'Bearer ' . $token,
+            ], 200);
+
+        } catch(Exception $e) {
+            return $this->buildBadRequestResponse($e->getMessage());
         }
-
-        $token = $user->createToken('auth_token');
-
-        return $this->buildSuccessResponse([
-            'success' => true,
-            'message' => 'Logged in',
-            'access_token' => $token,
-            'token_type' => 'Bearer',
-        ], 200);
     }
 
     public function signUp(Request $request): JsonResponse {
@@ -61,7 +64,7 @@ class AuthController extends Controller {
             return $this->buildSuccessResponse([
                 'id' => $user->uuid,
                 'name' => $user->name,
-                'token' => $token,
+                'token' => 'Bearer ' . $token,
             ]);
 
         } catch(Exception $e) {
