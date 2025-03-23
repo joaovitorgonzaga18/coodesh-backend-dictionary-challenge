@@ -16,9 +16,11 @@ class WordsController extends Controller {
     private const WORDS_API_BASE_URI = 'https://api.dictionaryapi.dev/api/v2/';
     private const DEFAULT_PAGE_LIMIT = 4;
     
-    public function search(Request $request, int $current_page = 1): JsonResponse {
+    public function search(Request $request): JsonResponse {
 
         try {            
+
+            $current_page = $request->all('current_page')['current_page'];
 
             $client = new Client(['base_uri' => self::WORDS_API_BASE_URI]);
 
