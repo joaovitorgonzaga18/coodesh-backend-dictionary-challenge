@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,6 +14,15 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+Route::get('/', function (): JsonResponse { 
+    return response()->json(['message' => 'Fullstack Challenge 🏅 - Dictionary']);
 });
+
+Route::group(['prefix' => 'auth'], function() {
+    Route::post('/signup', 'App\Http\Controllers\Auth\AuthController@signUp')->name('signup');
+    Route::post('/signin', 'App\Http\Controllers\Auth\AuthController@signIn')->name('signin');
+    Route::post('/signout', 'App\Http\Controllers\Auth\AuthController@signOut')->name('signout');
+});
+
+
+
