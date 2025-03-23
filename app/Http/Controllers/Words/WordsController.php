@@ -1,0 +1,130 @@
+<?php
+
+namespace App\Http\Controllers\Words;
+
+use App\Domain\Words\WordsDataValidator;
+use App\Http\Controllers\Controller;
+use App\Models\UserFavorite;
+use App\Models\UserHistory;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use GuzzleHttp\Client;
+use Exception;
+
+class WordsController extends Controller {
+
+    private const WORDS_API_BASE_URI = 'https://api.dictionaryapi.dev/api/v2/';
+    private const DEFAULT_PAGE_LIMIT = 4;
+    
+    public function search(Request $request, int $current_page = 1): JsonResponse {
+
+        try {            
+
+            $client = new Client(['base_uri' => self::WORDS_API_BASE_URI]);
+
+            $pageLimit = ($request->query('limit')) ? $request->query('limit') : self::DEFAULT_PAGE_LIMIT;
+            $search = $request->query('search');
+
+            $validator = new WordsDataValidator();
+            $validator->validateSearch($search);
+
+            $words = json_decode($client->request('GET', 'entries/en/'.$search)->getBody());   
+            $qtd = count($words);      
+            
+            $collection = collect($words);
+            $items = $collection->forPage($current_page, $pageLimit);     
+            
+            $results = [];
+            $total_pages = round($qtd / $pageLimit);
+            
+            foreach($items as $item) {
+                $results[] = $item->word;
+            }       
+
+            $response = array(
+                'results' => $results,
+                'totaldocs' => $qtd,
+                'page' => $current_page,
+                'totalPages' => $total_pages,
+                'hasNext' => ($current_page < $total_pages),
+                'hasPrev' => ($current_page > 1)
+            );
+
+            return $this->buildSuccessResponse($response);
+            
+        } catch(Exception $e) {
+            return $this->buildBadRequestResponse($e->getMessage());
+        }
+        
+    }
+
+    public function wordInfo(Request $request, string $search): JsonResponse {
+
+        try{
+
+            $client = new Client(['base_uri' => self::WORDS_API_BASE_URI]);
+
+            $validator = new WordsDataValidator();
+
+            $validator->validateSearch($search);
+
+            $response = json_decode($client->request('GET', 'entries/en/'.$search)->getBody());                  
+
+            $userHistory = UserHistory::create([
+                'user_id' => ($request->all('user_id')['user_id']),
+                'word' => $search,
+                'added' => date('Y-m-d h:i:s')
+            ]);
+
+            $userHistory->save();
+
+            return $this->buildSuccessResponse($response);
+
+        } catch(Exception $e) {
+            return $this->buildBadRequestResponse($e->getMessage());
+        }
+
+    }
+
+    public function favoriteWord(Request $request, string $word): JsonResponse {
+
+        try {                    
+            
+            $user_id = $request->all('user_id')['user_id'];
+
+            $userFavorite = UserFavorite::create([
+                'user_id' => $user_id,
+                'word' => $word,
+                'added' => date('Y-m-d h:i:s')
+            ]);
+
+            $userFavorite->save();
+
+            return $this->buildSuccessResponse(['user_id' => $user_id, 'word' => $word]);
+
+        } catch(Exception $e) {
+            return $this->buildBadRequestResponse($e->getMessage());
+        }
+
+    }
+
+    public function unfavoriteWord(Request $request, string $word): JsonResponse {
+
+        try {                    
+            
+            $user_id = $request->all('user_id')['user_id'];
+
+            $validator = new WordsDataValidator();
+            $validator->checkIfExistFavorite($user_id, $word);
+
+            $userFavorite = UserFavorite::where('user_id', $user_id)->where('word', $word)->delete();
+
+            return $this->buildSuccessResponse(['user_id' => $user_id, 'word' => $word]);
+
+        } catch(Exception $e) {
+            return $this->buildBadRequestResponse($e->getMessage());
+        }
+
+    }
+
+}

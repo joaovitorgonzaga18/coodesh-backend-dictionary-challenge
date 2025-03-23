@@ -24,5 +24,12 @@ Route::group(['prefix' => 'auth'], function() {
     Route::post('/signout', 'App\Http\Controllers\Auth\AuthController@signOut')->name('signout');
 });
 
+Route::group(['prefix' => 'entries'], function() {
+    Route::get('/en', 'App\Http\Controllers\Words\WordsController@search')->name('search');
+    Route::get('/en/{word}', 'App\Http\Controllers\Words\WordsController@wordInfo')->name('wordInfo');
+    Route::post('/en/{word}/favorite', 'App\Http\Controllers\Words\WordsController@favoriteWord')->name('favoriteWord');
+    Route::post('/en/{word}/unfavorite', 'App\Http\Controllers\Words\WordsController@unfavoriteWord')->name('unfavoriteWord');
+});
+
 
 
