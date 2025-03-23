@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use Exception;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller {    
     public function signIn(Request $request): JsonResponse {
@@ -55,12 +56,12 @@ class AuthController extends Controller {
             ]);
 
             $user->save();
-            $token = $user->createToken('auth_token');
+            $token = JWTAuth::fromUser($user);
 
             return $this->buildSuccessResponse([
                 'id' => $user->uuid,
                 'name' => $user->name,
-                'token' => $token->plainTextToken,
+                'token' => $token,
             ]);
 
         } catch(Exception $e) {
