@@ -1,48 +1,43 @@
-# Back-end Challenge - Dictionary
+# Backend Dictionary API - Challenge by Coodesh
+
+Este é um teste para avaliar as habilidades de desenvolvimento backend para a vaga de Desenvolvedor PHP.
 
 ## Introdução
 
-Este é um teste para que possamos ver as suas habilidades como Back-end Developer.
+Neste README, será abordado os passos de desenvolvimento da atividade
 
-Nesse teste você deverá desenvolver um aplicativo para listar palavras em inglês, utilizando como base a API [Free Dictionary API](https://dictionaryapi.dev/). O projeto a ser desenvolvido por você tem como objetivo exibir termos em inglês e gerenciar as palavras visualizadas, conforme indicado nos casos de uso que estão logo abaixo.
+### Passo 1
 
-[SPOILER] As instruções de entrega e apresentação do challenge estão no final deste Readme (=
+O primeiro passo foi a escolha das tecnologias e frameworks a serem usadas para o desenvolvimento da atividade. Devido a familiaridade, foi decidido o uso do Laravel como framework principal para o projeto com o banco de dados MySQL. Mais a frente, também foi decidido o uso do Redis como tecnologia principal para realizar o caching das requisições.
 
-### Antes de começar
- 
-- O projeto deve utilizar a Linguagem específica na avaliação. Por exempo: Python, R, Scala e entre outras;
-- Considere como deadline da avaliação a partir do início do teste. Caso tenha sido convidado a realizar o teste e não seja possível concluir dentro deste período, avise a pessoa que o convidou para receber instruções sobre o que fazer.
-- Documentar todo o processo de investigação para o desenvolvimento da atividade (README.md no seu repositório); os resultados destas tarefas são tão importantes do que o seu processo de pensamento e decisões à medida que as completa, por isso tente documentar e apresentar os seus hipóteses e decisões na medida do possível.
+Outra tecnologia usada para este projeto foi o Laradock, que é um conjunto de contêineres Docker pré-configurados para rodar projetos Laravel facilmente, garantindo praticidade e um desenvolvimento mais ágil.
+
+### Passo 2
+
+O segundo passo foi dar início a criação e estruturação das endpoints. Foi definido que a arquitetura do projeto seguiria por uma linha mas simples, onde as rotas seriam definidas no arquivo de rotas padrão do Laravel e os Controllers iriam acessar e manipular os dados do banco utilizando o Eloquent.
+
+A partir disso, os endpoints foram criados e testados, retornando as respostas com o body igual o especificado no readme original da atividade.
+
+Para alguns grupos de endpoints, foi necessário a criação de modelos e migrations para o banco de dados com base nas demandas da atividade, como por exemplo histórico de acessos e palavras favoritas. Não possuem controllers próprios, mas servem como um auxiliar para satisfazer os requisitos do projeto.
+
+### Passo 3
+
+O terceiro passo foi basicamente importar os dados do Json do repositório original da API para alimentar a base de dados com todas as palavras necessárias para o funcionamento da API da atividade.
+
+Para isso, foi criado um modelo e um seeder para popular a tabela no banco. O seeder, por sua vez, realiza uma requisição HTTP na url do arquivo RAW e cria os registros para cada palavra encontrada utilizando o próprio Eloquent.
+
+### Passo 4
+
+O quarto passo foi definir a tecnologia a ser usada para realizar o caching das requisições. Para essa tarefa, foi definido que seria utilizado o Redis para maior praticidade e eficiência para o projeto.
+
+O caching foi feito por um middleware, que realiza o caching para toda requisição do tipo GET feito na API.
 
 #### Tecnologias (Back-End):
-- API (Node.js, PHP, Ruby, etc) com ou sem uso de frameworks
-- Banco de dados (Postgres, MySQL, MongoDB, etc).
-
-Como sugestões, pode criar um banco de dados grátis **MongoDB** usando Atlas: https://www.mongodb.com/cloud/atlas ou banco de dados grátis **MySQL** no Heroku: https://elements.heroku.com/addons/jawsdb ou banco de dados grátis **Postgres** no Heroku: https://elements.heroku.com/addons/heroku-postgresql; (Recomendável usar Drivers oficiais para integração com o DB)
-
-#### Organização:
-- Aplicação de padrões Clean Code
-- Validação de chamadas assíncronas para evitar travamentos
+- API - PHP Laravel
+- Banco de dados MySQL
+- Gerenciamento de cache - Redis
 
 ### Modelo de Dados:
-
-Conforme indicado na documentação da API, a API retorna as informações de uma palavra, tais como etimologia, sinônimos, exemplos de uso, etc. Utilize os campos indicados na documentação dos endpoints para obter os dados necessários.
-
-### Back-End:
-
-Nessa etapa você deverá construir uma API Restful com as melhores práticas de desenvolvimento.
-
-**Obrigatório 1** - Você deverá atender aos seguintes casos de uso:
-
-- Como usuário, devo ser capaz de realizar login com usuário e senha
-- Como usuário, devo ser capaz de visualizar a lista de palavras do dicionário
-- Como usuário, devo ser capaz de guardar no histórico palavras já visualizadas
-- Como usuário, devo ser capaz de visualizar o histórico de palavras já visualizadas
-- Como usuário, deve ser capaz de guardar uma palavra como favorita
-- Como usuário, deve ser capaz de apagar uma palavra favorita
-- Internamente, a API deve fazer proxy da Words API, pois assim o front irá acessar somente a sua API
-
-**Obrigatório 2** - Você deverá desenvolver as seguintes rotas com suas requisições e respostas:
 
 <details open>
 <summary>[GET] /</summary>
@@ -95,11 +90,6 @@ Retornar a mensagem "Fullstack Challenge 🏅 - Dictionary"
 </details>
 <details open>
 <summary>[GET] /entries/en</summary>
-<p>
-Retornar a lista de palavras do dicionário, com paginação e suporte a busca. O endpoint de paginação de uma busca hipotética deve retornar a seguinte estrutura:
-<br/>
-[GET]/entries/en?search=fire&limit=4
-</p>
 
 ```json
 {
@@ -119,33 +109,75 @@ Retornar a lista de palavras do dicionário, com paginação e suporte a busca. 
 </details>
 <details open>
 <summary>[GET] /entries/en/:word</summary>
-<p>
-Retornar as informações da palavra especificada e registra o histórico de acesso.
-</p>
+
+```json
+[
+    {
+    "word": "fire",
+    "phonetic": "/ˈfɑeə(ɹ)/",
+    "phonetics": [
+			{
+				"text": "/ˈfɑeə(ɹ)/",
+				"audio": ""
+			},
+			{
+				"text": "/ˈfaɪə(ɹ)/",
+				"audio": ""
+			},
+			{
+				"text": "/ˈfaɪɚ/",
+				"audio": "https://api.dictionaryapi.dev/media/pronunciations/en/fire-us.mp3",
+				"sourceUrl": "https://commons.wikimedia.org/w/index.php?curid=424744",
+				"license": {
+					"name": "BY-SA 3.0",
+					"url": "https://creativecommons.org/licenses/by-sa/3.0"
+				}
+			}
+		],
+    }   
+]
+```
+
 </details>
 <details open>
 <summary>[POST] /entries/en/:word/favorite</summary>
-<p>
-Salva a palavra na lista de favoritas (retorno de dados no body é opcional)
-</p> 
+
+```json
+{
+	"user_id": "8bfee185-0d92-45d3-8cb5-6f119c57c439",
+	"word": "water"
+}
+```
+
 </details>
 <details open>
 <summary>[DELETE] /entries/en/:word/unfavorite</summary>
-<p>
-Remover a palavra da lista de favoritas (retorno de dados no body é opcional)
-</p>
+
+```json
+{
+	"user_id": "8bfee185-0d92-45d3-8cb5-6f119c57c439",
+	"word": "water"
+}
+```
+
 </details> 
 <details open>
 <summary>[GET] /user/me</summary>
-<p>
-Retornar o perfil do usúario
-</p>
+
+```json
+{
+	"id": "8bfee185-0d92-45d3-8cb5-6f119c57c439",
+	"name": "User 1",
+	"email": "example@email.com",
+	"email_verified_at": null,
+	"created_at": "2025-03-23T14:06:15.000000Z",
+	"updated_at": "2025-03-23T14:06:15.000000Z"
+}
+```
+
 </details> 
 <details open>
 <summary>[GET] /user/me/history</summary>
-<p>
-Retornar a lista de palavras visitadas
-</p>
 
 ```json
 {
@@ -177,9 +209,6 @@ Retornar a lista de palavras visitadas
 </details> 
 <details open>
 <summary>[GET] /user/me/favorites</summary>
-<p>
-Retornar a lista de palavras marcadas como favoritas
-</p>
 
 ```json
 {
@@ -211,10 +240,7 @@ Retornar a lista de palavras marcadas como favoritas
 
 </details>
 
-Além disso, os endpoints devem utilizar os seguintes códigos de status:
-- 200: sucesso com body ou sem body
-- 204: sucesso sem body
-- 400: mensagem de erro em formato humanizado, ou seja, sem informações internas e códigos de erro:
+Mensagem de erro:
 
 ```json
 {
@@ -222,59 +248,7 @@ Além disso, os endpoints devem utilizar os seguintes códigos de status:
 }
 ```
 
-**Obrigatório 3** - Você deve criar um script para baixar a lista de palavras do repositório e importar estas palavras para o banco de dados. A API não possui endpoint com a lista de palavras. Para criar seu endpoint será necessário alimentar o seu banco de dados com o [arquivo existente dentro do projeto no Github](https://github.com/dwyl/english-words/blob/master/words_dictionary.json).
+**Diferencial** - Documentação da API feita em OpenAPI 3.0 utilizando swagger, para visualizar, basta acessar [http://localhost/swagger](http://localhost/swagger)
 
-**Obrigatório 4** - Salvar em cache o resultado das requisições a API, para agilizar a resposta em caso de buscas com parâmetros repetidos. Sugestões são usar o Redis e/ou MongoDB;
+**Diferencial** - Projeto configurado em docker utilizando Laradock. Para rodar, basta seguir as instruções na [documentação oficial](https://laradock.io/docs/Intro).
 
-O cache pode ser feito a guardar todo o corpo das respostas ou para guardar o resultado das queries do banco. Para identificar a presença de cache, será necessário adicionar os seguintes headers nas respostas:
-- x-cache: valores HIT (retornou dados em cache) ou MISS (precisou buscar no banco)
-- x-response-time: duração da requisição em milissegundos
-
-**Diferencial 1** - Descrever a documentação da API utilizando o conceito de Open API 3.0;
-
-**Diferencial 2** - Escrever Unit Tests para os endpoints da API;
-
-**Diferencial 3** - Configurar Docker no Projeto para facilitar o Deploy da equipe de DevOps;
-
-**Diferencial 4** - Deploy em algum servidor, com ou sem automatização do CI.
-
-**Diferencial 5** - Implementar paginação com cursores ao inves de usar page e limit . Ao realizar este diferencial, o retorno dos endpoints deve possuir a seguinte estrutura:
-
-```json
-{
-    "results": [
-        "fire",
-        "firefly",
-        "fireplace",
-        "fireman"
-    ],
-    "totalDocs": 20,
-    "previous": "eyIkb2lkIjoiNTgwZmQxNmjJkOGI5In0",
-    "next": "eyIkb2lkIjoiNTgwZmQxNm1NjJkOGI4In0",
-    "hasNext": true,
-    "hasPrev": true,
-}
-```
-
-
-## Readme do Repositório
-
-- Deve conter o título do projeto
-- Uma descrição sobre o projeto em frase
-- Deve conter uma lista com linguagem, framework e/ou tecnologias usadas
-- Como instalar e usar o projeto (instruções)
-- Não esqueça o [.gitignore](https://www.toptal.com/developers/gitignore)
-- Se está usando github pessoal, referencie que é um challenge by coodesh:  
-
->  This is a challenge by [Coodesh](https://coodesh.com/)
-
-## Finalização e Instruções para a Apresentação
-
-1. Adicione o link do repositório com a sua solução no teste
-2. Adicione o link da apresentação do seu projeto no README.md.
-3. Verifique se o Readme está bom e faça o commit final em seu repositório;
-4. Envie e aguarde as instruções para seguir. Sucesso e boa sorte. =)
-
-## Suporte
-
-Use a [nossa comunidade](https://discord.gg/rdXbEvjsWu) para tirar dúvidas sobre o processo ou envie uma mensagem diretamente a um especialista no chat da plataforma. 
