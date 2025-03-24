@@ -14,9 +14,14 @@ class CacheApiResponse
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next): JsonResponse
+    public function handle(Request $request, Closure $next)
     {
-        if (!$request->isMethod('get')) {
+
+        $except = [
+            'swagger'
+        ];
+
+        if (!$request->isMethod('get') || in_array($request->path(), $except)) {
             return $next($request);
         }
 
