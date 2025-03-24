@@ -6,6 +6,7 @@ use App\Domain\Words\WordsDataValidator;
 use App\Http\Controllers\Controller;
 use App\Models\UserFavorite;
 use App\Models\UserHistory;
+use App\Models\Words;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
@@ -22,26 +23,23 @@ class WordsController extends Controller {
 
             $current_page = $request->all('current_page')['current_page'];
 
-            $client = new Client(['base_uri' => self::WORDS_API_BASE_URI]);
-
             $pageLimit = ($request->query('limit')) ? $request->query('limit') : self::DEFAULT_PAGE_LIMIT;
             $search = $request->query('search');
 
             $validator = new WordsDataValidator();
             $validator->validateSearch($search);
 
-            $words = json_decode($client->request('GET', 'entries/en/'.$search)->getBody());   
+            $words = Words::where('word', 'LIKE', $search."%")->get();
             $qtd = count($words);      
             
-            $collection = collect($words);
-            $items = $collection->forPage($current_page, $pageLimit);     
+            $items = collect($words)->forPage($current_page, $pageLimit);     
             
             $results = [];
             $total_pages = round($qtd / $pageLimit);
             
             foreach($items as $item) {
                 $results[] = $item->word;
-            }       
+            }      
 
             $response = array(
                 'results' => $results,
