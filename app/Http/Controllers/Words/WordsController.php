@@ -119,6 +119,8 @@ class WordsController extends Controller {
 
             $userFavorite = UserFavorite::where('user_id', $user_id)->where('word', $word)->delete();
 
+            $userFavorite->save();
+
             return $this->buildSuccessResponse(['user_id' => $user_id, 'word' => $word]);
 
         } catch(Exception $e) {
