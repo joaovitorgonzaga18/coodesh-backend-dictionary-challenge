@@ -21,7 +21,7 @@ class WordsController extends Controller {
 
         try {            
 
-            $current_page = $request->all('current_page')['current_page'];
+            $current_page = ($request->query('current_page')) ? $request->query('current_page') : 1;
 
             $pageLimit = ($request->query('limit')) ? $request->query('limit') : self::DEFAULT_PAGE_LIMIT;
             $search = $request->query('search');
