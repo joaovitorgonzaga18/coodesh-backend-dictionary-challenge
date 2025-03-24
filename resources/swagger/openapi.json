@@ -1,0 +1,461 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+      "title": "Dictionary API",
+      "version": "1.0.0"
+    },
+    "paths": {
+      "/": {
+        "get": {
+          "summary": "Index",
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "example": {
+                    "message": "Fullstack Challenge 🏅 - Dictionary"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request",
+              "content": {
+                "application/json": {
+                  "example": {
+                    "message": "Error message"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/auth/signup": {
+        "post": {
+          "summary": "User Signup",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "example": {
+                  "name": "User 1",
+                  "email": "example@email.com",
+                  "password": "test"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "example": {
+                    "id": "8bfee185-0d92-45d3-8cb5-6f119c57c439",
+                    "name": "User 1",
+                    "token": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request",
+              "content": {
+                "application/json": {
+                  "example": {
+                    "message": "Error message"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/auth/signin": {
+        "post": {
+          "summary": "User Signin",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "example": {
+                  "email": "example@email.com",
+                  "password": "test"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "example": {
+                    "id": "8bfee185-0d92-45d3-8cb5-6f119c57c439",
+                    "name": "User 1",
+                    "token": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request",
+              "content": {
+                "application/json": {
+                  "example": {
+                    "message": "Error message"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/entries/en": {
+        "get": {
+          "summary": "Search Entries",
+          "parameters": [
+            {
+              "name": "search",
+              "in": "query",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "limit",
+              "in": "query",
+              "required": true,
+              "schema": {
+                "type": "integer"
+              }
+            },
+            {
+              "name": "current_page",
+              "in": "query",
+              "required": true,
+              "schema": {
+                "type": "integer"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "example": {
+                    "results": [
+                      "fire",
+                      "fireable",
+                      "firearm",
+                      "firearmed"
+                    ],
+                    "totaldocs": 137,
+                    "page": "1",
+                    "totalPages": 34,
+                    "hasNext": true,
+                    "hasPrev": false
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request",
+              "content": {
+                "application/json": {
+                  "example": {
+                    "message": "Error message"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/entries/en/{word}": {
+        "get": {
+          "summary": "Get Entry Details",
+          "parameters": [
+            {
+              "name": "word",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "example": [
+                    {
+                      "word": "fire",
+                      "phonetic": "/ˈfɑeə(ɹ)/",
+                      "phonetics": [
+                        {
+                          "text": "/ˈfɑeə(ɹ)/",
+                          "audio": ""
+                        },
+                        {
+                          "text": "/ˈfaɪə(ɹ)/",
+                          "audio": ""
+                        },
+                        {
+                          "text": "/ˈfaɪɚ/",
+                          "audio": "https://api.dictionaryapi.dev/media/pronunciations/en/fire-us.mp3",
+                          "sourceUrl": "https://commons.wikimedia.org/w/index.php?curid=424744",
+                          "license": {
+                            "name": "BY-SA 3.0",
+                            "url": "https://creativecommons.org/licenses/by-sa/3.0"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request",
+              "content": {
+                "application/json": {
+                  "example": {
+                    "message": "Error message"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/entries/en/{word}/favorite": {
+        "post": {
+          "summary": "Favorite a word",
+          "parameters": [
+            {
+              "name": "word",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "example": {
+                  "user_id": "8bfee185-0d92-45d3-8cb5-6f119c57c439"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "example": {
+                    "user_id": "8bfee185-0d92-45d3-8cb5-6f119c57c439",
+                    "word": "water"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request",
+              "content": {
+                "application/json": {
+                  "example": {
+                    "message": "Error message"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/entries/en/{word}/unfavorite": {
+        "delete": {
+          "summary": "Unfavorite a word",
+          "parameters": [
+            {
+              "name": "word",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "example": {
+                  "user_id": "8bfee185-0d92-45d3-8cb5-6f119c57c439"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "example": {
+                    "user_id": "8bfee185-0d92-45d3-8cb5-6f119c57c439",
+                    "word": "fire"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request",
+              "content": {
+                "application/json": {
+                  "example": {
+                    "message": "Error message"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/user/me/history": {
+        "post": {
+          "summary": "Get User Search History",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "example": {
+                  "user_id": "8bfee185-0d92-45d3-8cb5-6f119c57c439"
+                }
+              }
+            }
+          },
+          "parameters": [
+            {
+              "name": "current_page",
+              "in": "query",
+              "required": true,
+              "schema": {
+                "type": "integer"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "example": {
+                    "results": [
+                      {
+                        "word": "fire",
+                        "added": "2025-03-24 03:45:38"
+                      },
+                      {
+                        "word": "goblin",
+                        "added": "2025-03-24 03:45:25"
+                      },
+                      {
+                        "word": "zombie",
+                        "added": "2025-03-24 01:08:23"
+                      },
+                      {
+                        "word": "fire",
+                        "added": "2025-03-23 08:32:38"
+                      }
+                    ],
+                    "totaldocs": 5,
+                    "page": "1",
+                    "totalPages": 1,
+                    "hasNext": false,
+                    "hasPrev": false
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request",
+              "content": {
+                "application/json": {
+                  "example": {
+                    "message": "Error message"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/user/me/favorites": {
+        "post": {
+          "summary": "Get User Favorite Words",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "example": {
+                  "user_id": "8bfee185-0d92-45d3-8cb5-6f119c57c439"
+                }
+              }
+            }
+          },
+          "parameters": [
+            {
+              "name": "current_page",
+              "in": "query",
+              "required": true,
+              "schema": {
+                "type": "integer"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "application/json": {
+                  "example": {
+                    "results": [
+                      {
+                        "word": "fire",
+                        "added": "2025-03-23 07:30:02"
+                      }
+                    ],
+                    "totaldocs": 1,
+                    "page": null,
+                    "totalPages": 0,
+                    "hasNext": false,
+                    "hasPrev": false
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad Request",
+              "content": {
+                "application/json": {
+                  "example": {
+                    "message": "Error message"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
