@@ -49,7 +49,7 @@ class UserController extends Controller {
             
             $user_id = $request->all('user_id')['user_id'];
 
-            $current_page = $request->all('current_page')['current_page'];
+            $current_page = $request->query('current_page');
 
             $pageLimit = self::DEFAULT_PAGE_LIMIT;
 
@@ -93,7 +93,7 @@ class UserController extends Controller {
             
             $user_id = $request->all('user_id')['user_id'];
 
-            $current_page = $request->all('current_page')['current_page'];
+            $current_page = $request->query('current_page');
 
             $pageLimit = self::DEFAULT_PAGE_LIMIT;
 
